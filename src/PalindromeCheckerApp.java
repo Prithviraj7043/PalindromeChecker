@@ -1,28 +1,39 @@
 import java.util.*;
 
-public class PalindromeCheckerApp {
+// Service class following OOPS principles
+class PalindromeChecker {
 
-  // Method to check palindrome after normalization
-  public static boolean isPalindrome(String input) {
+  // Public method exposed to client
+  public boolean checkPalindrome(String input) {
 
-    // Step 1: Normalize string
-    // Remove all non-alphanumeric characters (including spaces)
+    if (input == null) {
+      return false;
+    }
+
+    // Normalize string (ignore spaces & case)
     String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-    int start = 0;
-    int end = normalized.length() - 1;
+    // Using Stack (ArrayDeque)
+    Deque<Character> stack = new ArrayDeque<>();
 
-    // Step 2: Apply two-pointer logic
-    while (start < end) {
-      if (normalized.charAt(start) != normalized.charAt(end)) {
+    // Push all characters into stack
+    for (char ch : normalized.toCharArray()) {
+      stack.push(ch);
+    }
+
+    // Compare characters
+    for (char ch : normalized.toCharArray()) {
+      if (ch != stack.pop()) {
         return false;
       }
-      start++;
-      end--;
     }
 
     return true;
   }
+}
+
+// Application class
+public class UseCase11PalindromeCheckerApp {
 
   public static void main(String[] args) {
 
@@ -31,10 +42,13 @@ public class PalindromeCheckerApp {
     System.out.print("Enter a string: ");
     String input = scanner.nextLine();
 
-    boolean result = isPalindrome(input);
+    // Encapsulation: Logic handled by service class
+    PalindromeChecker checker = new PalindromeChecker();
+
+    boolean result = checker.checkPalindrome(input);
 
     if (result) {
-      System.out.println("The string \"" + input + "\" is a Palindrome (ignoring case and spaces).");
+      System.out.println("The string \"" + input + "\" is a Palindrome.");
     } else {
       System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
     }
