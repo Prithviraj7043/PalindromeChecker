@@ -1,16 +1,35 @@
 import java.util.*;
 
-// Step 1: Strategy Interface
-interface PalindromeStrategy {
-  boolean checkPalindrome(String input);
-}
+public class PalindromeCheckerApp {
 
-// Step 2: Stack Strategy Implementation
-class StackStrategy implements PalindromeStrategy {
 
-  @Override
-  public boolean checkPalindrome(String input) {
+  public static boolean iterativePalindrome(String input) {
+    String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
+    int start = 0;
+    int end = normalized.length() - 1;
+
+    while (start < end) {
+      if (normalized.charAt(start) != normalized.charAt(end)) {
+        return false;
+      }
+      start++;
+      end--;
+    }
+    return true;
+  }
+
+
+  public static boolean recursivePalindrome(String str, int start, int end) {
+    if (start >= end) return true;
+
+    if (str.charAt(start) != str.charAt(end)) return false;
+
+    return recursivePalindrome(str, start + 1, end - 1);
+  }
+
+
+  public static boolean stackPalindrome(String input) {
     String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
     Deque<Character> stack = new ArrayDeque<>();
 
@@ -23,89 +42,39 @@ class StackStrategy implements PalindromeStrategy {
         return false;
       }
     }
-
     return true;
   }
-}
-
-// Step 3: Deque Strategy Implementation
-class DequeStrategy implements PalindromeStrategy {
-
-  @Override
-  public boolean checkPalindrome(String input) {
-
-    String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-    Deque<Character> deque = new ArrayDeque<>();
-
-    for (char ch : normalized.toCharArray()) {
-      deque.add(ch);
-    }
-
-    while (deque.size() > 1) {
-      if (!deque.pollFirst().equals(deque.pollLast())) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-}
-
-// Step 4: Context Class
-class PalindromeContext {
-
-  private PalindromeStrategy strategy;
-
-  // Inject strategy at runtime
-  public PalindromeContext(PalindromeStrategy strategy) {
-    this.strategy = strategy;
-  }
-
-  public void setStrategy(PalindromeStrategy strategy) {
-    this.strategy = strategy;
-  }
-
-  public boolean execute(String input) {
-    return strategy.checkPalindrome(input);
-  }
-}
-
-// Step 5: Application Class
-public class PalindromeCheckerApp {
 
   public static void main(String[] args) {
 
     Scanner scanner = new Scanner(System.in);
 
-    System.out.println("Choose Strategy:");
-    System.out.println("1. Stack Strategy");
-    System.out.println("2. Deque Strategy");
-    System.out.print("Enter choice (1 or 2): ");
-
-    int choice = scanner.nextInt();
-    scanner.nextLine(); // consume newline
-
     System.out.print("Enter a string: ");
     String input = scanner.nextLine();
 
-    PalindromeStrategy strategy;
+    String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-    // Runtime selection
-    if (choice == 1) {
-      strategy = new StackStrategy();
-    } else {
-      strategy = new DequeStrategy();
-    }
+    long start1 = System.nanoTime();
+    boolean result1 = iterativePalindrome(input);
+    long end1 = System.nanoTime();
+    long time1 = end1 - start1;
 
-    PalindromeContext context = new PalindromeContext(strategy);
 
-    boolean result = context.execute(input);
+    long start2 = System.nanoTime();
+    boolean result2 = recursivePalindrome(normalized, 0, normalized.length() - 1);
+    long end2 = System.nanoTime();
+    long time2 = end2 - start2;
 
-    if (result) {
-      System.out.println("The string \"" + input + "\" is a Palindrome.");
-    } else {
-      System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
-    }
+
+    long start3 = System.nanoTime();
+    boolean result3 = stackPalindrome(input);
+    long end3 = System.nanoTime();
+    long time3 = end3 - start3;
+
+    System.out.println("\n----- Performance Results -----");
+    System.out.println("Iterative Result: " + result1 + " | Time: " + time1 + " ns");
+    System.out.println("Recursive Result: " + result2 + " | Time: " + time2 + " ns");
+    System.out.println("Stack Result:     " + result3 + " | Time: " + time3 + " ns");
 
     scanner.close();
   }
