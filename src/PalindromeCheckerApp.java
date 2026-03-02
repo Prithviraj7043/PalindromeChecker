@@ -2,21 +2,26 @@ import java.util.*;
 
 public class PalindromeCheckerApp {
 
-  // Recursive method to check palindrome
-  public static boolean isPalindrome(String str, int start, int end) {
+  // Method to check palindrome after normalization
+  public static boolean isPalindrome(String input) {
 
-    // Base condition: if pointers cross or meet
-    if (start >= end) {
-      return true;
+    // Step 1: Normalize string
+    // Remove all non-alphanumeric characters (including spaces)
+    String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+
+    int start = 0;
+    int end = normalized.length() - 1;
+
+    // Step 2: Apply two-pointer logic
+    while (start < end) {
+      if (normalized.charAt(start) != normalized.charAt(end)) {
+        return false;
+      }
+      start++;
+      end--;
     }
 
-    // If characters don't match
-    if (str.charAt(start) != str.charAt(end)) {
-      return false;
-    }
-
-    // Recursive call for next inner characters
-    return isPalindrome(str, start + 1, end - 1);
+    return true;
   }
 
   public static void main(String[] args) {
@@ -26,10 +31,10 @@ public class PalindromeCheckerApp {
     System.out.print("Enter a string: ");
     String input = scanner.nextLine();
 
-    boolean result = isPalindrome(input, 0, input.length() - 1);
+    boolean result = isPalindrome(input);
 
     if (result) {
-      System.out.println("The string \"" + input + "\" is a Palindrome.");
+      System.out.println("The string \"" + input + "\" is a Palindrome (ignoring case and spaces).");
     } else {
       System.out.println("The string \"" + input + "\" is NOT a Palindrome.");
     }
